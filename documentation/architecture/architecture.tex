@@ -1,0 +1,63 @@
+\documentclass{article}
+\usepackage[margin=1in]{geometry}
+\usepackage{hyperref}
+\usepackage{listings}
+\usepackage{graphicx}
+\usepackage{booktabs}
+\usepackage{enumitem}
+\usepackage{xcolor}
+\usepackage{longtable}
+\hypersetup{colorlinks=true, linkcolor=blue, urlcolor=blue}
+
+\title{System Architecture -- Swaroop Formulation Industries Platform}
+\author{Swaroop Formulation Industries}
+\date{2026-03-25}
+
+\begin{document}
+\maketitle
+
+\section{Overview}
+
+The platform evolves from a static chatbot to a full enterprise system across six levels.
+
+\section{Architecture Layers}
+
+\subsection{Frontend Layer}
+
+Next.js/React with pages for Landing, AI Chatbot, Certifications Vault, Data Dashboards, and Admin Panel. Tailwind CSS styling. TypeScript throughout.
+
+\subsection{API Layer}
+
+FastAPI (Python) with REST endpoints and WebSocket for streaming chat. API versioning (\texttt{/api/v1/}). Rate limiting. CORS configuration.
+
+\subsection{AI/ML Layer}
+
+\textbf{Adaptive RAG Engine:} A query classifier routes requests to vector RAG, SQL RAG, web search, or direct LLM.
+
+\textbf{Agentic Orchestrator (LangGraph)} with tools: \texttt{VectorSearchTool}, \texttt{FinancialCalculatorTool}, \texttt{CertificationLookupTool}, \texttt{WebSearchTool}. Embeddings via HuggingFace sentence-transformers.
+
+\subsection{Data Layer}
+
+ChromaDB/Qdrant for vectors, PostgreSQL for structured data, S3/MinIO for object storage, Redis for caching.
+
+\subsection{ETL/Pipeline Layer}
+
+Apache Airflow for orchestration. DAGs for market data, regulatory updates, competitor monitoring, and certificate tracking. Scrapers using BeautifulSoup, Scrapy, and Playwright.
+
+\subsection{Infrastructure Layer}
+
+Docker Compose (development), Kubernetes/K3s (production). Traefik ingress. Prometheus and Grafana observability. Terraform for infrastructure as code.
+
+\section{Data Flow}
+
+User query $\rightarrow$ Frontend $\rightarrow$ API $\rightarrow$ Query Classifier $\rightarrow$ [Vector Store | PostgreSQL | Web] $\rightarrow$ LLM $\rightarrow$ Streaming response
+
+\section{Security}
+
+API key proxying, RBAC via Keycloak, audit logging, no secrets in code.
+
+\section{Scaling Strategy}
+
+Horizontal pod autoscaling, read replicas for PostgreSQL, and a CDN for static assets.
+
+\end{document}

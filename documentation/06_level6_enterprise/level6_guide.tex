@@ -1,0 +1,110 @@
+\documentclass{article}
+
+\usepackage{hyperref}
+\usepackage{listings}
+\usepackage{graphicx}
+\usepackage{booktabs}
+\usepackage{geometry}
+\usepackage{enumitem}
+\usepackage{xcolor}
+
+\geometry{margin=1in}
+\hypersetup{colorlinks=true, linkcolor=blue, urlcolor=blue}
+
+\lstset{
+  basicstyle=\ttfamily\small,
+  breaklines=true,
+  frame=single,
+  backgroundcolor=\color{gray!10}
+}
+
+\title{Level 6 -- Enterprise-Grade Scalable Platform (Expert)}
+\author{Swaroop Formulation Industries}
+\date{2026-03-25}
+
+\begin{document}
+\maketitle
+
+\section{Goal}
+
+Production-hardened, multi-tenant--ready, Kubernetes-deployable platform with full observability.
+
+\section{New Technology}
+
+\begin{itemize}[leftmargin=*]
+  \item \textbf{Kubernetes} (K3s)
+  \item \textbf{Traefik} or \textbf{Kong} API gateway
+  \item \textbf{Prometheus} and \textbf{Grafana}
+  \item \textbf{Keycloak} or \textbf{NextAuth}
+  \item \textbf{Redis Streams} or \textbf{RabbitMQ}
+  \item \textbf{Qdrant} or \textbf{Weaviate}
+\end{itemize}
+
+\section{Features}
+
+\begin{itemize}[leftmargin=*]
+  \item Multi-tenant support
+  \item RBAC roles: Admin, Investor, Operator, Auditor
+  \item Real-time streaming chat (WebSocket)
+  \item A/B testing
+  \item Audit logging
+  \item Automated certificate renewal workflow
+  \item Webhook integrations (e.g., Slack)
+  \item GraphQL API alongside REST
+  \item Internationalization (English / Hindi)
+\end{itemize}
+
+\section{Deployment Budget Tiers}
+
+\begin{center}
+\begin{tabular}{@{}lll@{}}
+\toprule
+\textbf{Tier} & \textbf{Monthly budget} & \textbf{Stack} \\
+\midrule
+Entry & \$0--10 & Oracle Cloud Free Tier (4 ARM A1 cores, 24\,GB RAM) + K3s \\
+Growth & \$10--50 & Hetzner or DigitalOcean Kubernetes \\
+Scale & \$50--200 & AWS EKS Spot or GCP GKE Autopilot \\
+\bottomrule
+\end{tabular}
+\end{center}
+
+\section{Always-Free or Low-Cost Components}
+
+\begin{itemize}[leftmargin=*]
+  \item \textbf{Cloudflare} CDN and DNS
+  \item \textbf{Let's Encrypt} SSL
+  \item \textbf{$\sim$\$10/year} \texttt{.in} domain
+  \item \textbf{Cloudflare R2} or \textbf{Backblaze B2} (about 10\,GB free)
+\end{itemize}
+
+\section{Implementation Steps}
+
+\begin{enumerate}[leftmargin=*]
+  \item Create Kubernetes manifests
+  \item Set up Helm charts
+  \item Configure Traefik ingress
+  \item Deploy Keycloak for authentication
+  \item Add Prometheus and Grafana stack
+  \item Implement the GraphQL layer
+  \item Add i18n (EN / HI)
+  \item Write Terraform IaC
+  \item Set up feature flags with Unleash
+\end{enumerate}
+
+\section{Version Control}
+
+\begin{itemize}[leftmargin=*]
+  \item \textbf{GitFlow} or trunk-based development
+  \item Feature flags via \textbf{Unleash}
+  \item Helm charts and \textbf{Terraform} / \textbf{OpenTofu}
+  \item Branch protection and signed commits
+  \item Automated changelog generation
+\end{itemize}
+
+Example release tag:
+
+\begin{lstlisting}
+v1.0.0-l6-production
+\end{lstlisting}
+
+\end{document}

@@ -1,0 +1,74 @@
+\documentclass{article}
+\usepackage[margin=1in]{geometry}
+\usepackage{hyperref}
+\usepackage{listings}
+\usepackage{graphicx}
+\usepackage{booktabs}
+\usepackage{enumitem}
+\usepackage{xcolor}
+\usepackage{longtable}
+\hypersetup{colorlinks=true, linkcolor=blue, urlcolor=blue}
+
+\title{Data Strategy -- Scraping, ETL Pipelines, and GenAI Automation}
+\author{Swaroop Formulation Industries}
+\date{2026-03-25}
+
+\begin{document}
+\maketitle
+
+\section{Data Sources}
+
+\begin{longtable}{@{}p{3.2cm}p{3.5cm}p{1.8cm}p{3.8cm}@{}}
+\toprule
+\textbf{Source} & \textbf{Method} & \textbf{Frequency} & \textbf{Free Tool} \\
+\midrule
+\endfirsthead
+\multicolumn{4}{c}{\textit{(continued)}} \\
+\toprule
+\textbf{Source} & \textbf{Method} & \textbf{Frequency} & \textbf{Free Tool} \\
+\midrule
+\endhead
+\midrule
+\multicolumn{4}{r}{\textit{continued on next page}} \\
+\endfoot
+\bottomrule
+\endlastfoot
+PLA/PBAT commodity prices & IndiaMART/Alibaba scraping & Daily & BeautifulSoup + Requests \\
+Biodegradable market reports & RSS feeds + public summaries & Weekly & Feedparser \\
+CPCB/BIS regulatory updates & Government site scraping & Daily & Scrapy \\
+Competitor websites & Selenium/Playwright & Weekly & Playwright \\
+News/media mentions & Google News RSS + NewsAPI & Daily & NewsAPI (100 req/day free) \\
+Trade event calendars & Static scraping & Monthly & Requests \\
+LinkedIn company updates & Apify free tier & Weekly & Apify \\
+Patent filings & Google Patents scraping & Monthly & SerpAPI (100/month free) \\
+Government subsidies & MSME portal scraping & Weekly & BeautifulSoup \\
+Weather/agriculture data & Open-Meteo API & Daily & Open-Meteo (free, no key) \\
+\end{longtable}
+
+\section{Airflow DAG Structure}
+
+\begin{itemize}[leftmargin=*]
+  \item \texttt{dags/market\_data/} --- \texttt{dag\_pla\_prices.py}, \texttt{dag\_market\_reports.py}
+  \item \texttt{dags/regulatory/} --- \texttt{dag\_cpcb\_monitor.py}, \texttt{dag\_bis\_standards.py}
+  \item \texttt{dags/competitors/} --- \texttt{dag\_competitor\_scrape.py}, \texttt{dag\_competitor\_analysis.py}
+  \item \texttt{dags/certificates/} --- \texttt{dag\_cert\_renewal\_alerts.py}
+  \item \texttt{dags/genai/} --- \texttt{dag\_weekly\_summary.py}, \texttt{dag\_investor\_report.py}
+\end{itemize}
+
+\section{ETL Pattern}
+
+Extract (scraper) $\rightarrow$ Transform (clean, validate, normalize) $\rightarrow$ Load (PostgreSQL + ChromaDB). Incremental loading with upsert. Data quality checks. Error handling with retries.
+
+\section{GenAI Automation}
+
+Report Generator, Email Drafter, Social Media Content, Document Translator, Competitive Intelligence Summarizer --- all using free LLM APIs (Groq, HuggingFace).
+
+\section{Data Versioning}
+
+DVC or LakeFS free tier for tracking dataset changes.
+
+\section{Storage}
+
+Raw data in \texttt{\_0\_Resources/\_scraped/} as JSON. Processed data in PostgreSQL. Embeddings in ChromaDB/Qdrant.
+
+\end{document}

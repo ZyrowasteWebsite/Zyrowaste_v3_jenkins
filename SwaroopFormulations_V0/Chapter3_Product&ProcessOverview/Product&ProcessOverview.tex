@@ -1,0 +1,65 @@
+\section*{4. Product and Process Overview}
+
+\noindent\textbf{Product:} PLA-based biodegradable plastic bags for groceries, food packaging, and agri use.
+
+\medskip
+
+\noindent\textbf{Raw Material:} PLA blends compounded with additives (UV stabilizers, color pigments, etc.).
+
+\medskip
+
+\noindent\textbf{Technology Flow:}
+
+\begin{center}
+\begin{tikzpicture}[node distance=1.4cm, every node/.style={draw, rounded corners, minimum width=4.5cm, minimum height=1cm, align=center}]
+\node (blend) {Vertical Blender};
+\node (extrude) [below=of blend] {Plastic Extruder \& \\ Blow Film Machine};
+\node (print) [below=of extrude] {Printing};
+\node (cut) [below=of print] {Cutting \& Sealing};
+
+\draw[->, thick] (blend) -- (extrude);
+\draw[->, thick] (extrude) -- (print);
+\draw[->, thick] (print) -- (cut);
+\end{tikzpicture}
+\end{center}
+
+\vspace{0.5cm}
+
+\section*{5. Financial Projections Summary}
+
+\subsection*{5.1 Highlights from Project Report (INR Lakhs)}
+
+\begin{landscape}
+    
+\begin{center}
+\begin{tabular}{>{\bfseries}l *{3}{>{\centering\arraybackslash}p{2.8cm}}}
+\toprule
+Metric & Year 1 & Year 3 & Year 5 \\
+\midrule
+Sales & 95.76 & 127.98 & 158.63 \\
+EBITDA (approx.) & $\sim$10.5 & $\sim$14.2 & $\sim$18.5 \\
+Net Profit (After Tax) & 4.74 & 8.93 & 13.31 \\
+Net Profit Margin & 4.95\% & 6.98\% & 8.39\% \\
+Return on Investment (ROI) & $\sim$20\% & $\sim$32\% & $\sim$45\% \\
+DSCR (Avg.) & -- & -- & 3.44 \\
+\bottomrule
+\end{tabular}
+\end{center}
+
+\end{landscape}
+
+\vspace{0.5cm}
+\noindent\textcolor{green}{\checkmark} Break-even achieved in Year 1 with strong growth in net profit and DSCR over the project life.
+
+\vspace{0.8cm}
+\section*{6. Regulatory Readiness}
+
+To ensure compliance and marketability, the project is structured around mandatory certifications:
+
+\begin{itemize}[label=\textcolor{green}{\checkmark}]
+    \item Udyam Registration (MSME)
+    \item GST Certification
+    \item Pollution Control Board NOC
+    \item Fire Safety NOC
+    \item BIS IS 17088:2019 (optional but recommended)
+\end{itemize}
