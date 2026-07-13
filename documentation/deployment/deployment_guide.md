@@ -99,3 +99,10 @@ services:
 - Backup strategy for databases and object storage
 - Monitoring alerts (latency, errors, saturation)
 - Log aggregation and retention
+
+## Jenkins production (zyrowaste.com)
+
+For CI/CD with Jenkins, rolling deploys, and restoring **https://zyrowaste.com**, see:
+
+- [Jenkins CI/CD Guide (Markdown)](./jenkins_guide.md)
+- Artifacts: root `Jenkinsfile`, `docker-compose.prod.yml`, `scripts/jenkins/`
