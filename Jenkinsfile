@@ -84,7 +84,7 @@ pipeline {
             dir('frontend') {
               sh '''
                 #!/bin/bash
-                set -euo pipefail
+                set -eu
 
                 npm ci --prefer-offline || npm install
                 npm run lint
