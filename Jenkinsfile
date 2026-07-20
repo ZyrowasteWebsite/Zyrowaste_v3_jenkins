@@ -113,7 +113,7 @@ pipeline {
           steps {
             dir('frontend') {
               sh '''
-                set -euo pipefail
+                set -eu
                 npm ci --prefer-offline || npm install
                 npm run build
               '''
@@ -123,7 +123,7 @@ pipeline {
         stage('Backend unit tests') {
           steps {
             sh '''
-              set -euo pipefail
+              set -eu
               python3 -m pip install -r backend/requirements.txt pytest
               GROQ_API_KEY=ci-placeholder PYTHONPATH=backend pytest backend/tests/ --tb=short -q || \
                 echo "WARN: no tests or soft-fail — continuing if suite missing"
@@ -157,7 +157,7 @@ pipeline {
     stage('Security scan') {
       steps {
         sh '''
-          set -euo pipefail
+          set -eu
           if command -v trivy >/dev/null 2>&1; then
             trivy image --exit-code 0 --severity HIGH,CRITICAL --no-progress \
               "${FRONTEND_IMAGE}:${IMAGE_TAG}" || true
@@ -195,7 +195,7 @@ pipeline {
       steps {
         sshagent(credentials: ['ssh-prod']) {
           sh """
-            set -euo pipefail
+            set -eu
             chmod +x scripts/jenkins/deploy.sh scripts/jenkins/healthcheck.sh scripts/jenkins/rollback.sh
             export FRONTEND_IMAGE='${FRONTEND_IMAGE}'
             export BACKEND_IMAGE='${BACKEND_IMAGE}'
@@ -213,7 +213,7 @@ pipeline {
     stage('Smoke / health') {
       steps {
         sh """
-          set -euo pipefail
+          set -eu
           chmod +x scripts/jenkins/healthcheck.sh
           ./scripts/jenkins/healthcheck.sh '${HEALTH_URL}' '${SITE_URL}' 30 10
         """
