@@ -37,6 +37,7 @@ pipeline {
   }
 
   environment {
+    PATH = "/var/lib/jenkins/.local/bin:${env.PATH}"
     APP_NAME           = 'zyrowaste'
     DOMAIN             = 'zyrowaste.com'
     REGISTRY           = "${env.DOCKER_REGISTRY ?: 'ghcr.io'}"
