@@ -98,7 +98,7 @@ pipeline {
             sh '''
               #!/bin/bash
               set -eu
-              python3 -m pip install --quiet ruff
+              
               ruff check backend/
             '''
           }
