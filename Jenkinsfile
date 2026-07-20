@@ -83,9 +83,12 @@ pipeline {
           steps {
             dir('frontend') {
               sh '''
+                #!/bin/bash
                 set -euo pipefail
+
                 npm ci --prefer-offline || npm install
                 npm run lint
+                
               '''
             }
           }
@@ -93,7 +96,8 @@ pipeline {
         stage('Backend lint') {
           steps {
             sh '''
-              set -euo pipefail
+              #!/bin/bash
+              set -eu
               python3 -m pip install --quiet ruff
               ruff check backend/
             '''
