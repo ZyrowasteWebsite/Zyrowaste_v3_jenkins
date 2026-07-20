@@ -124,10 +124,23 @@ pipeline {
         stage('Backend unit tests') {
           steps {
             sh '''
-              set -eu
-              python3 -m pip install -r backend/requirements.txt pytest
-              GROQ_API_KEY=ci-placeholder PYTHONPATH=backend pytest backend/tests/ --tb=short -q || \
-                echo "WARN: no tests or soft-fail — continuing if suite missing"
+               #!/bin/bash
+                set -eu
+
+                python3 -m venv .venv
+                . .venv/bin/activate
+
+                pip install --upgrade pip
+                pip install -r backend/requirements.txt
+                pip install pytest
+
+                if [ -d backend/tests ]; then
+                    GROQ_API_KEY=ci-placeholder \
+                    PYTHONPATH=backend \
+                    pytest backend/tests/ --tb=short -q
+                else
+                    echo "No backend tests found. Skipping."
+                fi
             '''
           }
         }
