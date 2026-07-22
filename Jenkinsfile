@@ -96,11 +96,19 @@ pipeline {
           steps {
             sh '''
               bash -c '
-              set -euo pipefail
-              python3 -m pip install --quiet ruff
-              ruff check backend/
-              '
-            '''
+               set -eu
+                python3 -m venv .lint-venv
+                . .lint-venv/bin/activate
+                pip install --upgrade pip
+                pip install ruff
+                ruff check backend/
+                deactivate
+                rm -rf .lint-venv
+                set -euo pipefail
+                python3 -m pip install --quiet ruff
+                ruff check backend/
+                '
+                '''
           }
         }
       }
