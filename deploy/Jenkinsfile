@@ -15,7 +15,8 @@ pipeline {
 
   options {
     timestamps()
-    disableConcurrentBuilds()
+    // Avoid queue-stuck when a previous run hangs: new run aborts older in-progress run.
+    disableConcurrentBuilds(abortPrevious: true)
     buildDiscarder(logRotator(numToKeepStr: '10', artifactNumToKeepStr: '5'))
     timeout(time: 60, unit: 'MINUTES')
     ansiColor('xterm')
