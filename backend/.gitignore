@@ -1,0 +1,17 @@
+__pycache__/
+*.pyc
+*.pyo
+.venv/
+venv/
+env/
+.env
+.env.*
+!.env.example
+chroma_db/
+.pytest_cache/
+.mypy_cache/
+*.egg-info/
+dist/
+build/
+airflow_home/logs/
+data/scraped/

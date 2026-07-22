@@ -1,0 +1,7 @@
+# Scraper-only dependencies (not installed in the Docker image).
+# Used by scrapers/ offline scripts only.
+# Install:  pip install -r requirements-scrapers.txt
+-r requirements.txt
+requests==2.32.5
+beautifulsoup4==4.13.5
+feedparser==6.0.11

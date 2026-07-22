@@ -5,12 +5,20 @@ from pathlib import Path
 
 
 def _project_root() -> Path:
-    return Path(__file__).resolve().parents[2]
+    """Backend root; data/reports/ lives here in the new layout."""
+    return Path(__file__).resolve().parents[1]
 
 
 def default_financials_tex_path() -> Path:
-    """Default path to Chapter 5 financials (repo root / SwaroopFormulations_V0 / ...)."""
-    return _project_root() / "SwaroopFormulations_V0" / "Chapter5" / "Financials.tex"
+    """Default path to Chapter 5 financials.
+
+    New layout:  backend/data/reports/SwaroopFormulations_V0/Chapter5/Financials.tex
+    Legacy path: <repo-root>/SwaroopFormulations_V0/Chapter5/Financials.tex
+    """
+    backend = _project_root()
+    new = backend / "data" / "reports" / "SwaroopFormulations_V0" / "Chapter5" / "Financials.tex"
+    legacy = backend.parent / "SwaroopFormulations_V0" / "Chapter5" / "Financials.tex"
+    return new if new.is_file() else legacy
 
 
 def _row_pattern(metric: str) -> re.Pattern[str]:

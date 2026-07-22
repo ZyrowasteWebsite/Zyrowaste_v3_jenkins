@@ -27,7 +27,15 @@ USER_AGENT = (
 
 
 def _project_root() -> Path:
-    return Path(__file__).resolve().parents[2]
+    """Return the backend root (data/ lives here in the new layout)."""
+    return Path(__file__).resolve().parents[1]
+
+
+def _scraped_dir() -> Path:
+    backend = _project_root()
+    new_path = backend / "data" / "scraped"
+    old_path = backend.parent / "_0_Resources" / "_scraped"
+    return new_path if (backend / "data").is_dir() else old_path
 
 
 def scrape_indiamart_pla() -> dict[str, Any]:
@@ -95,9 +103,8 @@ def scrape_news_rss() -> dict[str, Any]:
 
 
 def save_scraped_data(payload: dict[str, Any], prefix: str = "market") -> Path:
-    """Write JSON under ``_0_Resources/_scraped/`` with a UTC timestamp in the filename."""
-    root = _project_root()
-    out_dir = root / "_0_Resources" / "_scraped"
+    """Write JSON under ``data/scraped/`` with a UTC timestamp in the filename."""
+    out_dir = _scraped_dir()
     out_dir.mkdir(parents=True, exist_ok=True)
     ts = datetime.now(timezone.utc).strftime("%Y%m%dT%H%M%SZ")
     path = out_dir / f"{prefix}_{ts}.json"

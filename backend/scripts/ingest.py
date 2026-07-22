@@ -26,8 +26,13 @@ if str(BACKEND_ROOT) not in sys.path:
 
 
 PROJECT_ROOT = BACKEND_ROOT.parent
-DEFAULT_RESOURCES_DIR = PROJECT_ROOT / "_0_Resources"
-PROJECT_REPORT_PDF = PROJECT_ROOT / "Project_Report___Biodegradable_Packaging_Material.pdf"
+# Resources live under backend/data/resources/ in the new layout;
+# fall back to the old monorepo _0_Resources/ at project root.
+_DATA_DIR = BACKEND_ROOT / "data" / "resources"
+DEFAULT_RESOURCES_DIR = _DATA_DIR if _DATA_DIR.is_dir() else PROJECT_ROOT / "_0_Resources"
+_REPORT_NEW = BACKEND_ROOT / "data" / "resources" / "Project_Report___Biodegradable_Packaging_Material.pdf"
+_REPORT_OLD = PROJECT_ROOT / "Project_Report___Biodegradable_Packaging_Material.pdf"
+PROJECT_REPORT_PDF = _REPORT_NEW if _REPORT_NEW.is_file() else _REPORT_OLD
 
 
 def _collect_pdf_paths(resources_dir: Path, extra_pdf: Path) -> list[Path]:

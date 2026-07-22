@@ -1,0 +1,29 @@
+# Backend .dockerignore — excludes dev/test artefacts from the image context
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+.env
+.env.*
+!.env.example
+chroma_db/
+.venv/
+venv/
+env/
+.git/
+.pytest_cache/
+.mypy_cache/
+*.egg-info/
+
+# Test code not needed at runtime
+tests/
+
+# Offline scraper scripts (not imported by the API)
+scrapers/
+
+# LaTeX integration utility (offline, not part of API)
+latex_integration/
+
+# Dev-only docs
+*.md
+migrations_note.md

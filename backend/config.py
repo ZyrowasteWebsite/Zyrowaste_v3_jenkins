@@ -15,8 +15,9 @@ class Settings(BaseSettings):
 
     groq_api_key: str = Field(..., alias="GROQ_API_KEY")
     chroma_persist_dir: str = Field(default="./chroma_db", alias="CHROMA_PERSIST_DIR")
+    # FastEmbed model name — ONNX quantised all-MiniLM-L6-v2 (no PyTorch needed)
     embedding_model: str = Field(
-        default="sentence-transformers/all-MiniLM-L6-v2",
+        default="BAAI/bge-small-en-v1.5",
         alias="EMBEDDING_MODEL",
     )
     llm_model: str = Field(default="llama-3.3-70b-versatile", alias="LLM_MODEL")

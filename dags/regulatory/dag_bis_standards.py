@@ -13,7 +13,7 @@ from airflow.operators.python import PythonOperator
 from bs4 import BeautifulSoup
 from sqlalchemy.orm import Session
 
-_BACKEND_ROOT = Path(__file__).resolve().parents[2] / "backend"
+_BACKEND_ROOT = Path(__file__).resolve().parents[2]
 if str(_BACKEND_ROOT) not in sys.path:
     sys.path.insert(0, str(_BACKEND_ROOT))
 

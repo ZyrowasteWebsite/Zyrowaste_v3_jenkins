@@ -28,7 +28,15 @@ USER_AGENT = (
 
 
 def _project_root() -> Path:
-    return Path(__file__).resolve().parents[2]
+    """Return the backend root (data/ lives here in the new layout)."""
+    return Path(__file__).resolve().parents[1]
+
+
+def _scraped_dir() -> Path:
+    backend = _project_root()
+    new_path = backend / "data" / "scraped" / "regulatory"
+    old_path = backend.parent / "_0_Resources" / "_scraped" / "regulatory"
+    return new_path if (backend / "data").is_dir() else old_path
 
 
 def _fetch_with_retries(url: str) -> requests.Response | None:
@@ -94,9 +102,8 @@ def scrape_cpcb_circulars() -> dict[str, Any]:
 
 
 def save_regulatory_data(payload: dict[str, Any], prefix: str = "cpcb") -> Path:
-    """Persist JSON under ``_0_Resources/_scraped/regulatory/``."""
-    root = _project_root()
-    out_dir = root / "_0_Resources" / "_scraped" / "regulatory"
+    """Persist JSON under ``data/scraped/regulatory/``."""
+    out_dir = _scraped_dir()
     out_dir.mkdir(parents=True, exist_ok=True)
     ts = datetime.now(timezone.utc).strftime("%Y%m%dT%H%M%SZ")
     path = out_dir / f"{prefix}_{ts}.json"
