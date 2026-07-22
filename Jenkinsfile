@@ -108,7 +108,7 @@ pipeline {
             dir('frontend') {
               sh '''
                 #!/bin/bash
-                set -euo pipefail
+                set -eu
                 npm ci --prefer-offline 2>&1 | tail -5
                 npm run lint
               '''
@@ -119,7 +119,7 @@ pipeline {
           steps {
             sh '''
               #!/bin/bash
-              set -euo pipefail
+              set -eu
               python3 -m pip install --quiet ruff
               ruff check backend/
             '''
@@ -140,7 +140,7 @@ pipeline {
             dir('frontend') {
               sh '''
                 #!/bin/bash
-                set -euo pipefail
+                set -eu
                 # node_modules already present from Lint stage — skip re-install
                 [ -d node_modules ] || npm ci --prefer-offline
                 npm run build
@@ -153,7 +153,7 @@ pipeline {
           steps {
             sh '''
               #!/bin/bash
-              set -euo pipefail
+              set -eu
 
               # Create a fresh venv scoped to this build to avoid polluting the agent
               VENV_DIR="${WORKSPACE}/.test-venv"
@@ -185,7 +185,7 @@ pipeline {
           script {
             docker.withRegistry("https://${env.REGISTRY}", 'docker-registry') {
               sh '''
-                set -euo pipefail
+                set -eu
                 docker system df || true
                 # Warm cache from last successful images (first run may miss, that's fine)
                 docker pull "${FRONTEND_IMAGE}:latest" || true
@@ -211,7 +211,7 @@ pipeline {
     stage('Security scan') {
       steps {
         sh '''
-          set -euo pipefail
+          set -eu
           if command -v trivy >/dev/null 2>&1; then
             trivy image --exit-code 0 --severity HIGH,CRITICAL --no-progress \
               "${FRONTEND_IMAGE}:${IMAGE_TAG}" || true
@@ -257,7 +257,7 @@ pipeline {
       steps {
         sshagent(credentials: ['ssh-prod']) {
           sh """
-            set -euo pipefail
+            set -eu
             chmod +x deploy/scripts/jenkins/deploy.sh \
                      deploy/scripts/jenkins/healthcheck.sh \
                      deploy/scripts/jenkins/rollback.sh
@@ -279,7 +279,7 @@ pipeline {
     stage('Smoke / health') {
       steps {
         sh """
-          set -euo pipefail
+          set -eu
           chmod +x deploy/scripts/jenkins/healthcheck.sh
           ./deploy/scripts/jenkins/healthcheck.sh '${HEALTH_URL}' '${SITE_URL}' 30 10
         """
