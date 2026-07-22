@@ -1,3 +1,5 @@
+# syntax=docker/dockerfile:1.7
+#
 # ── Stage 1: dependency builder ─────────────────────────────────────────────
 # Heavy pip install runs here; only the installed packages are copied forward.
 FROM python:3.11-slim AS builder
@@ -11,8 +13,9 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
     && rm -rf /var/lib/apt/lists/*
 
 COPY requirements.txt .
-RUN pip install --no-cache-dir --upgrade pip \
- && pip install --no-cache-dir --prefix=/install -r requirements.txt
+RUN --mount=type=cache,target=/root/.cache/pip \
+    pip install --upgrade pip \
+ && pip install --prefix=/install -r requirements.txt
 
 
 # ── Stage 2: lean runtime image ─────────────────────────────────────────────

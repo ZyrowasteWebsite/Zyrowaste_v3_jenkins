@@ -1,3 +1,5 @@
+# syntax=docker/dockerfile:1.7
+#
 # ── Stage 1: Vite build ─────────────────────────────────────────────────────
 FROM node:20-alpine AS build
 
@@ -5,7 +7,7 @@ WORKDIR /app
 
 # Install deps first (layer-cached when only source changes)
 COPY package.json package-lock.json ./
-RUN npm ci --prefer-offline
+RUN --mount=type=cache,target=/root/.npm npm ci --prefer-offline
 
 COPY . .
 RUN npm run build

@@ -46,6 +46,8 @@ pipeline {
 
   environment {
     PATH               = "/var/lib/jenkins/.local/bin:${env.PATH}"
+    DOCKER_BUILDKIT    = "1"
+    COMPOSE_DOCKER_CLI_BUILD = "1"
     APP_NAME           = 'zyrowaste'
     DOMAIN             = 'zyrowaste.com'
     REGISTRY           = "${env.DOCKER_REGISTRY ?: 'ghcr.io'}"
@@ -167,18 +169,27 @@ pipeline {
     // ── 4. Build Docker images ────────────────────────────────────────────────
     stage('Build images') {
       steps {
-        script {
-          docker.withRegistry("https://${env.REGISTRY}", 'docker-registry') {
-            def frontendImg = docker.build(
-              "${env.FRONTEND_IMAGE}:${env.IMAGE_TAG}",
-              '--no-cache -f frontend/Dockerfile ./frontend'
-            )
-            def backendImg = docker.build(
-              "${env.BACKEND_IMAGE}:${env.IMAGE_TAG}",
-              '--no-cache -f backend/Dockerfile ./backend'
-            )
-            frontendImg.tag('latest')
-            backendImg.tag('latest')
+        timeout(time: 40, unit: 'MINUTES') {
+          script {
+            docker.withRegistry("https://${env.REGISTRY}", 'docker-registry') {
+              sh '''
+                set -euo pipefail
+                docker system df || true
+                # Warm cache from last successful images (first run may miss, that's fine)
+                docker pull "${FRONTEND_IMAGE}:latest" || true
+                docker pull "${BACKEND_IMAGE}:latest" || true
+              '''
+              def frontendImg = docker.build(
+                "${env.FRONTEND_IMAGE}:${env.IMAGE_TAG}",
+                "--pull --cache-from ${env.FRONTEND_IMAGE}:latest --progress=plain -f frontend/Dockerfile ./frontend"
+              )
+              def backendImg = docker.build(
+                "${env.BACKEND_IMAGE}:${env.IMAGE_TAG}",
+                "--pull --cache-from ${env.BACKEND_IMAGE}:latest --progress=plain -f backend/Dockerfile ./backend"
+              )
+              frontendImg.tag('latest')
+              backendImg.tag('latest')
+            }
           }
         }
       }
@@ -217,7 +228,8 @@ pipeline {
         // Free disk after push — dangling layers and the build-number tag can go
         sh '''
           docker image prune -f || true
-          docker builder prune -f --keep-storage=1GB || true
+          # Keep build cache so next build is incremental; prune only stale caches.
+          docker builder prune -f --filter "until=168h" || true
         '''
       }
     }
