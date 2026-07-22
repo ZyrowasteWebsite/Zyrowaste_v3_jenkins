@@ -83,10 +83,11 @@ pipeline {
           steps {
             dir('frontend') {
               sh '''
-                #!/bin/bash
+                bash -c '
                 set -euo pipefail
                 npm ci --prefer-offline 2>&1 | tail -5
                 npm run lint
+                '
               '''
             }
           }
@@ -94,10 +95,11 @@ pipeline {
         stage('Backend lint') {
           steps {
             sh '''
-              #!/bin/bash
+              bash -c '
               set -euo pipefail
               python3 -m pip install --quiet ruff
               ruff check backend/
+              '
             '''
           }
         }
@@ -115,12 +117,13 @@ pipeline {
           steps {
             dir('frontend') {
               sh '''
-                #!/bin/bash
+                bash -c '
                 set -euo pipefail
                 # node_modules already present from Lint stage — skip re-install
                 [ -d node_modules ] || npm ci --prefer-offline
                 npm run build
                 rm -rf dist
+                '
               '''
             }
           }
@@ -128,7 +131,7 @@ pipeline {
         stage('Backend unit tests') {
           steps {
             sh '''
-              #!/bin/bash
+              bash -c '
               set -euo pipefail
 
               # Create a fresh venv scoped to this build to avoid polluting the agent
@@ -148,6 +151,7 @@ pipeline {
 
               deactivate
               rm -rf "${VENV_DIR}"
+              '
             '''
           }
         }
@@ -178,7 +182,7 @@ pipeline {
     stage('Security scan') {
       steps {
         sh '''
-          #!/bin/bash
+          bash -c '
           set -euo pipefail
           if command -v trivy >/dev/null 2>&1; then
             trivy image --exit-code 0 --severity HIGH,CRITICAL --no-progress \
@@ -188,6 +192,7 @@ pipeline {
           else
             echo "Trivy not installed on agent — skipping image scan"
           fi
+          '
         '''
       }
     }
@@ -224,7 +229,7 @@ pipeline {
       steps {
         sshagent(credentials: ['ssh-prod']) {
           sh """
-            #!/bin/bash
+            bash -c '
             set -euo pipefail
             chmod +x deploy/scripts/jenkins/deploy.sh \
                      deploy/scripts/jenkins/healthcheck.sh \
@@ -237,6 +242,7 @@ pipeline {
             export COMPOSE_PROJECT='${COMPOSE_PROJECT}'
             export DOMAIN='${DOMAIN}'
             ./deploy/scripts/jenkins/deploy.sh
+            '
           """
         }
       }
@@ -246,10 +252,11 @@ pipeline {
     stage('Smoke / health') {
       steps {
         sh """
-          #!/bin/bash
+          bash -c '
           set -euo pipefail
           chmod +x deploy/scripts/jenkins/healthcheck.sh
           ./deploy/scripts/jenkins/healthcheck.sh '${HEALTH_URL}' '${SITE_URL}' 30 10
+          '
         """
       }
     }

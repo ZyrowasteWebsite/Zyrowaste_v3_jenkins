@@ -6,3 +6,4 @@ infrastructure/nginx/ssl/
 *.tfstate
 *.tfstate.backup
 .terraform/
+/node_modules/
