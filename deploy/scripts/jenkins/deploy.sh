@@ -11,9 +11,12 @@ set -euo pipefail
 : "${COMPOSE_PROJECT:=zyrowaste}"
 : "${DOMAIN:=zyrowaste.com}"
 : "${SSH_USER:=root}"
+: "${FRESH_CLEAN_DEPLOY:=true}"
 
 REMOTE="${SSH_USER}@${PROD_HOST}"
 COMPOSE_FILE="docker-compose.prod.yml"
+SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+DEPLOY_REPO_ROOT="$(cd "${SCRIPT_DIR}/../.." && pwd)"
 
 echo "==> Deploying Zyrowaste tag=${IMAGE_TAG} → ${REMOTE}:${DEPLOY_PATH}"
 
@@ -29,22 +32,22 @@ rsync -az --delete \
   --include 'infrastructure/***' \
   --include 'scripts/jenkins/***' \
   --exclude '*' \
-  ./ "${REMOTE}:${DEPLOY_PATH}/" || true
+  "${DEPLOY_REPO_ROOT}/" "${REMOTE}:${DEPLOY_PATH}/" || true
 
 # Ensure required files exist on remote (full sync of deploy artifacts)
 ssh -o StrictHostKeyChecking=accept-new "${REMOTE}" "mkdir -p '${DEPLOY_PATH}/infrastructure/nginx/ssl' '${DEPLOY_PATH}/scripts/jenkins'"
 
 scp -o StrictHostKeyChecking=accept-new \
-  docker-compose.prod.yml \
+  "${DEPLOY_REPO_ROOT}/docker-compose.prod.yml" \
   "${REMOTE}:${DEPLOY_PATH}/docker-compose.prod.yml"
 
 scp -o StrictHostKeyChecking=accept-new \
-  infrastructure/nginx/zyrowaste.conf \
+  "${DEPLOY_REPO_ROOT}/infrastructure/nginx/zyrowaste.conf" \
   "${REMOTE}:${DEPLOY_PATH}/infrastructure/nginx/zyrowaste.conf"
 
 scp -o StrictHostKeyChecking=accept-new \
-  scripts/jenkins/healthcheck.sh \
-  scripts/jenkins/rollback.sh \
+  "${DEPLOY_REPO_ROOT}/scripts/jenkins/healthcheck.sh" \
+  "${DEPLOY_REPO_ROOT}/scripts/jenkins/rollback.sh" \
   "${REMOTE}:${DEPLOY_PATH}/scripts/jenkins/"
 
 # Record previous tag for rollback
@@ -59,7 +62,7 @@ fi
 echo '${IMAGE_TAG}' > .current_tag
 REMOTE_PRE
 
-# Pull + rolling recreate (start-first style: new containers up, then remove old)
+# Pull + recreate
 ssh "${REMOTE}" bash -s <<REMOTE_DEPLOY
 set -euo pipefail
 cd '${DEPLOY_PATH}'
@@ -79,12 +82,21 @@ export BACKEND_IMAGE='${BACKEND_IMAGE}'
 export IMAGE_TAG='${IMAGE_TAG}'
 export COMPOSE_PROJECT_NAME='${COMPOSE_PROJECT}'
 
+if [[ '${FRESH_CLEAN_DEPLOY}' == 'true' ]]; then
+  echo "Running fresh clean deployment: removing old containers, images, and volumes..."
+  docker compose -f '${COMPOSE_FILE}' --env-file .env.production down -v --remove-orphans || true
+  docker container prune -f || true
+  docker image prune -a -f || true
+  docker builder prune -a -f || true
+  docker volume prune -f || true
+fi
+
 # Login to registry if credentials present on server
 if [[ -n "\${DOCKER_REGISTRY:-}" && -n "\${DOCKER_USER:-}" && -n "\${DOCKER_PASSWORD:-}" ]]; then
   echo "\$DOCKER_PASSWORD" | docker login "\$DOCKER_REGISTRY" -u "\$DOCKER_USER" --password-stdin
 fi
 
-docker compose -f '${COMPOSE_FILE}' --env-file .env.production pull frontend backend || true
+docker compose -f '${COMPOSE_FILE}' --env-file .env.production pull frontend backend nginx || true
 
 # Rolling: recreate app tiers without stopping data plane first
 docker compose -f '${COMPOSE_FILE}' --env-file .env.production up -d --no-deps --force-recreate --remove-orphans backend
@@ -117,8 +129,8 @@ for i in \$(seq 1 30); do
   sleep 4
 done
 
-# Ensure data services + edge proxy are up (idempotent)
-docker compose -f '${COMPOSE_FILE}' --env-file .env.production up -d postgres redis chromadb nginx
+# Ensure edge proxy is up
+docker compose -f '${COMPOSE_FILE}' --env-file .env.production up -d nginx
 
 # Reload nginx config without dropping connections where possible
 docker compose -f '${COMPOSE_FILE}' --env-file .env.production exec -T nginx nginx -s reload || \

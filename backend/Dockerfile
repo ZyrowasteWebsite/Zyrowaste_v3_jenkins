@@ -6,12 +6,6 @@ FROM python:3.11-slim AS builder
 
 WORKDIR /build
 
-# System deps needed by some packages (psycopg2-binary, cryptography, etc.)
-RUN apt-get update && apt-get install -y --no-install-recommends \
-        gcc \
-        libpq-dev \
-    && rm -rf /var/lib/apt/lists/*
-
 COPY requirements.txt .
 RUN --mount=type=cache,target=/root/.cache/pip \
     pip install --upgrade pip \
@@ -24,14 +18,7 @@ FROM python:3.11-slim
 WORKDIR /app
 
 ENV PYTHONDONTWRITEBYTECODE=1 \
-    PYTHONUNBUFFERED=1 \
-    # FastEmbed caches its ONNX model here; mount a volume to persist across restarts
-    FASTEMBED_CACHE_DIR=/app/.fastembed_cache
-
-# Runtime system deps only (libpq for psycopg2-binary)
-RUN apt-get update && apt-get install -y --no-install-recommends \
-        libpq5 \
-    && rm -rf /var/lib/apt/lists/*
+    PYTHONUNBUFFERED=1
 
 # Copy installed packages from builder
 COPY --from=builder /install /usr/local

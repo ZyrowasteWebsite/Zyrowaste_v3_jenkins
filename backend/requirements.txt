@@ -1,43 +1,14 @@
 # ---------------------------------------------------------------
-# Core API requirements — installed in the Docker image.
-# Excludes PyTorch, sentence-transformers, and scraper-only deps.
-# Install:  pip install -r requirements.txt
+# Ultra-light backend requirements for 1 GB droplets.
+# No Chroma, no LangChain, no embeddings runtime.
 # ---------------------------------------------------------------
-
-# Web framework
 fastapi==0.115.12
 uvicorn[standard]==0.34.3
-
-# LangChain stack (no meta langchain package — subpackages only)
-langchain-core>=0.3.27
-langchain-community>=0.3.27
-langchain-groq==0.3.7
-langchain-text-splitters==0.3.9
-langgraph==0.6.4
-
-# Vector store
-chromadb==0.5.23
-
-# Lightweight ONNX embeddings — replaces sentence-transformers + torch (~1.8 GB saved)
-# Uses the same all-MiniLM-L6-v2 model weights via ONNX runtime.
-fastembed==0.4.2
-
-# Document loading
-pypdf==5.9.0
-
-# Pydantic
 pydantic==2.11.7
 pydantic-settings==2.10.1
 python-dotenv==1.1.1
-
-# HTTP client (used by adaptive RAG + tests)
 httpx==0.28.1
-
-# Database
 sqlalchemy==2.0.43
-psycopg2-binary==2.9.10
-
-# Auth
 passlib[bcrypt]==1.7.4
 bcrypt==4.3.0
 python-jose[cryptography]==3.5.0

@@ -33,21 +33,8 @@ services:
     env_file:
       - .env.production
     environment:
-      CHROMA_HOST: chromadb
-      CHROMA_PORT: "8000"
-      CHROMA_PERSIST_DIR: /data/chroma
-      DATABASE_URL: ${DATABASE_URL}
-      REDIS_URL: redis://redis:6379/0
       CORS_ORIGINS: ${CORS_ORIGINS:-https://zyrowaste.com,https://www.zyrowaste.com}
-    volumes:
-      - chroma_data:/data/chroma
-    depends_on:
-      postgres:
-        condition: service_healthy
-      redis:
-        condition: service_healthy
-      chromadb:
-        condition: service_started
+      DATABASE_URL: ${DATABASE_URL:-sqlite:///./swaroop.db}
     networks:
       - zyrowaste
     healthcheck:
@@ -65,46 +52,6 @@ services:
     labels:
       - "app=zyrowaste"
       - "tier=backend"
-
-  chromadb:
-    image: chromadb/chroma:0.5.23
-    restart: unless-stopped
-    volumes:
-      - chroma_data:/chroma/chroma
-    networks:
-      - zyrowaste
-
-  postgres:
-    image: postgres:16-alpine
-    restart: unless-stopped
-    environment:
-      POSTGRES_USER: ${POSTGRES_USER:-zyrowaste}
-      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:?set POSTGRES_PASSWORD}
-      POSTGRES_DB: ${POSTGRES_DB:-zyrowaste}
-    volumes:
-      - postgres_data:/var/lib/postgresql/data
-    networks:
-      - zyrowaste
-    healthcheck:
-      test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER:-zyrowaste} -d ${POSTGRES_DB:-zyrowaste}"]
-      interval: 5s
-      timeout: 5s
-      retries: 10
-    # Not exposed publicly — only on internal network
-
-  redis:
-    image: redis:7-alpine
-    restart: unless-stopped
-    command: ["redis-server", "--appendonly", "yes"]
-    volumes:
-      - redis_data:/data
-    networks:
-      - zyrowaste
-    healthcheck:
-      test: ["CMD", "redis-cli", "ping"]
-      interval: 10s
-      timeout: 3s
-      retries: 5
 
   # Edge reverse proxy — TLS termination for zyrowaste.com
   nginx:
@@ -148,7 +95,4 @@ networks:
     name: zyrowaste_net
 
 volumes:
-  postgres_data:
-  redis_data:
-  chroma_data:
   certbot_www:

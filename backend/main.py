@@ -1,4 +1,4 @@
-"""FastAPI entrypoint: health, chat (RAG), auth, and vector store warmup."""
+"""FastAPI entrypoint: health, chat, and auth."""
 
 from contextlib import asynccontextmanager
 
@@ -10,15 +10,13 @@ from config import get_settings
 from db.session import init_db
 from models import ChatRequest, ChatResponse, HealthResponse, SourceDoc
 from rag.chain import get_rag_response
-from rag.vectorstore import get_vectorstore
 
-APP_VERSION = "0.2.0-l2-rag"
+APP_VERSION = "0.3.0-l3-light"
 
 
 @asynccontextmanager
 async def lifespan(app: FastAPI):
     init_db()
-    get_vectorstore()
     yield
 
 
@@ -44,7 +42,7 @@ async def health() -> HealthResponse:
 
 @app.post("/api/chat", response_model=ChatResponse)
 async def chat(body: ChatRequest) -> ChatResponse:
-    """Run the RAG chain over the user's message history."""
+    """Run the lightweight chat chain over the user's message history."""
     result = await get_rag_response(body.messages)
     sources = [SourceDoc(**s) for s in result["sources"]]
     return ChatResponse(reply=result["reply"], sources=sources)

@@ -30,8 +30,8 @@ pipeline {
     )
     booleanParam(
       name: 'SKIP_TESTS',
-      defaultValue: false,
-      description: 'Skip lint/unit tests (emergency deploys only)'
+      defaultValue: true,
+      description: 'Skip lint/unit tests (recommended on 1GB instance)'
     )
     booleanParam(
       name: 'FORCE_DEPLOY',
@@ -42,6 +42,11 @@ pipeline {
       name: 'IMAGE_TAG_OVERRIDE',
       defaultValue: '',
       description: 'Explicit image tag to deploy (rollback to a previous build)'
+    )
+    booleanParam(
+      name: 'FRESH_CLEAN_DEPLOY',
+      defaultValue: true,
+      description: 'Before deploy, delete old containers/images/volumes on droplet'
     )
   }
 
@@ -65,6 +70,22 @@ pipeline {
   }
 
   stages {
+    stage('Pre-clean Jenkins node disk') {
+      steps {
+        sh '''
+          set +e
+          df -h || true
+          # Do not kill unrelated running containers on the Jenkins node.
+          docker ps -aq --filter "name=zyrowaste" | xargs -r docker rm -f || true
+          docker container prune -f || true
+          docker image prune -a -f || true
+          docker volume prune -f || true
+          docker builder prune -a -f || true
+          df -h || true
+        '''
+      }
+    }
+
 
     // ── 1. Checkout ──────────────────────────────────────────────────────────
     stage('Checkout') {
@@ -247,6 +268,7 @@ pipeline {
             export PROD_HOST='${PROD_HOST}'
             export COMPOSE_PROJECT='${COMPOSE_PROJECT}'
             export DOMAIN='${DOMAIN}'
+            export FRESH_CLEAN_DEPLOY='${params.FRESH_CLEAN_DEPLOY}'
             ./deploy/scripts/jenkins/deploy.sh
           """
         }

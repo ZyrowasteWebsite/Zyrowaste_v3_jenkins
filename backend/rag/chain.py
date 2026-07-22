@@ -1,15 +1,16 @@
-"""LangChain RAG pipeline: Groq LLM + Chroma retrieval."""
+"""Ultra-light chat pipeline: direct Groq API call (no vector DB runtime)."""
 
-from langchain_core.messages import AIMessage, BaseMessage, HumanMessage, SystemMessage
-from langchain_groq import ChatGroq
+from __future__ import annotations
+
+import json
+
+import httpx
 
 from config import get_settings
 
-from rag.vectorstore import similarity_search
+SYSTEM_PROMPT = """You are the AI assistant for Swaroop Formulation Industries Pvt. Ltd., a biodegradable plastic bag manufacturing company based in Unnao, Uttar Pradesh, India.
 
-RAG_SYSTEM_PROMPT = """You are the AI assistant for Swaroop Formulation Industries Pvt. Ltd., a biodegradable plastic bag manufacturing company based in Unnao, Uttar Pradesh, India.
-
-You MUST ground answers in the RETRIEVED CONTEXT below when it is relevant. If the context does not contain the answer, combine your general knowledge with the company facts below only where appropriate, and say clearly when information is not in the documents.
+Use the company facts below when relevant. If exact data is not available, say that clearly.
 
 KEY FACTS:
 - Products: PLA-based biodegradable bags for groceries, food packaging, agricultural mulch films, and biomedical waste.
@@ -37,80 +38,59 @@ REGULATORY: GST registered, Udyam MSME, PCB NOC, Fire Safety NOC, Trade License.
 
 FUTURE SCOPE: Diversification into cutlery/films, EU/ASEAN exports, carbon-credit linkages, methane-fed PHA research.
 
-Respond concisely, professionally, and helpfully. Prefer facts supported by RETRIEVED CONTEXT for document-specific questions. If asked about topics outside the company scope, politely redirect. Use bullet points for lists. Mention specific numbers when relevant.
-
---- RETRIEVED CONTEXT ---
-{context}
---- END CONTEXT ---
+Respond concisely, professionally, and helpfully. Use bullet points for lists and mention numbers where relevant.
 """
 
 
-def _dict_to_message(msg: dict[str, str]) -> BaseMessage | None:
-    role = msg.get("role", "").lower()
-    content = msg.get("content", "")
-    if role == "system":
-        return SystemMessage(content=content)
-    if role == "user":
-        return HumanMessage(content=content)
-    if role == "assistant":
-        return AIMessage(content=content)
-    return None
-
-
-def _last_user_query(messages: list[dict[str, str]]) -> str:
-    for msg in reversed(messages):
-        if msg.get("role", "").lower() == "user":
-            return str(msg.get("content", "")).strip()
-    return ""
-
-
-def _conversation_without_client_system(
-    messages: list[dict[str, str]],
-) -> list[BaseMessage]:
-    out: list[BaseMessage] = []
+def _normalize_messages(messages: list[dict[str, str]]) -> list[dict[str, str]]:
+    """Keep only valid OpenAI-compatible message roles/content."""
+    out: list[dict[str, str]] = []
     for msg in messages:
-        if msg.get("role", "").lower() == "system":
+        role = str(msg.get("role", "")).lower()
+        content = str(msg.get("content", "")).strip()
+        if role not in {"user", "assistant"} or not content:
             continue
-        m = _dict_to_message(msg)
-        if m is not None:
-            out.append(m)
+        out.append({"role": role, "content": content})
+    if not out:
+        out.append(
+            {
+                "role": "user",
+                "content": "Give a short, helpful overview of Swaroop Formulation Industries for a new visitor.",
+            }
+        )
     return out
 
 
 async def get_rag_response(messages: list[dict[str, str]]) -> dict:
-    """
-    Retrieve relevant chunks, augment the system prompt, and call ChatGroq.
-
-    Returns:
-        {"reply": str, "sources": list[dict]} with source content and metadata.
-    """
+    """Call Groq chat completion directly. Keeps API contract unchanged."""
     settings = get_settings()
-    query = _last_user_query(messages)
-    docs = similarity_search(query, k=4) if query else []
-    context = "\n\n---\n\n".join(d.page_content for d in docs) if docs else "(no matching passages retrieved)"
-    system_content = RAG_SYSTEM_PROMPT.format(context=context)
+    chat_messages = [{"role": "system", "content": SYSTEM_PROMPT}]
+    chat_messages.extend(_normalize_messages(messages))
 
-    llm_messages: list[BaseMessage] = [SystemMessage(content=system_content)]
-    llm_messages.extend(_conversation_without_client_system(messages))
+    payload = {
+        "model": settings.llm_model,
+        "messages": chat_messages,
+        "temperature": 0.2,
+        "max_tokens": 900,
+    }
+    headers = {
+        "Authorization": f"Bearer {settings.groq_api_key}",
+        "Content-Type": "application/json",
+    }
 
-    if len(llm_messages) == 1:
-        llm_messages.append(
-            HumanMessage(
-                content=query
-                or "Give a short, helpful overview of Swaroop Formulation Industries for a new visitor."
-            )
+    async with httpx.AsyncClient(timeout=60) as client:
+        resp = await client.post(
+            "https://api.groq.com/openai/v1/chat/completions",
+            headers=headers,
+            content=json.dumps(payload),
         )
-
-    llm = ChatGroq(
-        groq_api_key=settings.groq_api_key,
-        model_name=settings.llm_model,
-        temperature=0.2,
+        resp.raise_for_status()
+        data = resp.json()
+    reply_text = (
+        data.get("choices", [{}])[0]
+        .get("message", {})
+        .get("content", "No response generated.")
     )
-    response = await llm.ainvoke(llm_messages)
-    reply_text = response.content if isinstance(response.content, str) else str(response.content)
 
-    sources: list[dict] = [
-        {"content": d.page_content, "metadata": dict(d.metadata or {})}
-        for d in docs
-    ]
-    return {"reply": reply_text, "sources": sources}
+    # Keep response schema same as before.
+    return {"reply": str(reply_text), "sources": []}
