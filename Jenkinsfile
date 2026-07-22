@@ -116,15 +116,34 @@ pipeline {
           }
         }
         stage('Backend lint') {
-          steps {
-            sh '''
-              #!/bin/bash
-              set -eu
-              python3 -m pip install --quiet ruff
-              ruff check backend/
-            '''
-          }
-        }
+    when {
+        expression { !params.SKIP_TESTS }
+    }
+    steps {
+        sh '''
+            set -eu
+
+            # Create temporary virtual environment
+            python3 -m venv .lint-venv
+
+            # Activate it
+            . .lint-venv/bin/activate
+
+            # Upgrade pip
+            python -m pip install --quiet --upgrade pip
+
+            # Install Ruff inside the venv
+            pip install --quiet ruff
+  
+            # Run lint
+            ruff check backend/
+
+            # Cleanup
+            deactivate
+            rm -rf .lint-venv
+        '''
+    }
+}
       }
     }
 
