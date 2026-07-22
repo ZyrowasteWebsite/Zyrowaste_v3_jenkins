@@ -104,9 +104,7 @@ pipeline {
                 ruff check backend/
                 deactivate
                 rm -rf .lint-venv
-                set -euo pipefail
-                python3 -m pip install --quiet ruff
-                ruff check backend/
+                
                 '
                 '''
           }
