@@ -178,6 +178,7 @@ pipeline {
     stage('Security scan') {
       steps {
         sh '''
+          #!/bin/bash
           set -euo pipefail
           if command -v trivy >/dev/null 2>&1; then
             trivy image --exit-code 0 --severity HIGH,CRITICAL --no-progress \
@@ -223,6 +224,7 @@ pipeline {
       steps {
         sshagent(credentials: ['ssh-prod']) {
           sh """
+            #!/bin/bash
             set -euo pipefail
             chmod +x deploy/scripts/jenkins/deploy.sh \
                      deploy/scripts/jenkins/healthcheck.sh \
@@ -244,6 +246,7 @@ pipeline {
     stage('Smoke / health') {
       steps {
         sh """
+          #!/bin/bash
           set -euo pipefail
           chmod +x deploy/scripts/jenkins/healthcheck.sh
           ./deploy/scripts/jenkins/healthcheck.sh '${HEALTH_URL}' '${SITE_URL}' 30 10
