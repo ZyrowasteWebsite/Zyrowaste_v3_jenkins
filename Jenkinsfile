@@ -171,7 +171,7 @@ pipeline {
         stage('Backend unit tests') {
           steps {
             sh '''
-              #!/bin/bash
+              
               set -eu
 
               # Create a fresh venv scoped to this build to avoid polluting the agent
@@ -181,15 +181,15 @@ pipeline {
               . "${VENV_DIR}/bin/activate"
 
               # Install slim dev deps (no torch / sentence-transformers)
-              pip install --quiet --upgrade pip
-              pip install --quiet -r backend/requirements-dev.txt
+              "${VENV_DIR}/bin/pip" install --quiet --upgrade pip
+              "${VENV_DIR}/bin/pip" install --quiet -r backend/requirements-dev.txt
 
               # Run only pure-unit tests that need no live services
               GROQ_API_KEY=ci-placeholder \
               PYTHONPATH=backend \
-              pytest backend/tests/test_models.py --tb=short -q
+              "${VENV_DIR}/bin/pytest" backend/tests/test_models.py --tb=short -q
 
-              deactivate
+              
               rm -rf "${VENV_DIR}"
             '''
           }
