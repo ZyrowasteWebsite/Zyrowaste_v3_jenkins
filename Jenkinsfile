@@ -52,8 +52,8 @@ pipeline {
 
   environment {
     PATH               = "/var/lib/jenkins/.local/bin:${env.PATH}"
-    DOCKER_BUILDKIT    = "1"
-    COMPOSE_DOCKER_CLI_BUILD = "1"
+    DOCKER_BUILDKIT    = "0"
+    COMPOSE_DOCKER_CLI_BUILD = "0"
     APP_NAME           = 'zyrowaste'
     DOMAIN             = 'zyrowaste.com'
     REGISTRY           = "${env.DOCKER_REGISTRY ?: 'ghcr.io'}"
@@ -212,11 +212,11 @@ pipeline {
               '''
               def frontendImg = docker.build(
                 "${env.FRONTEND_IMAGE}:${env.IMAGE_TAG}",
-                "--pull --cache-from ${env.FRONTEND_IMAGE}:latest --progress=plain -f frontend/Dockerfile ./frontend"
+                "--pull --cache-from ${env.FRONTEND_IMAGE}:latest -f frontend/Dockerfile ./frontend"
               )
               def backendImg = docker.build(
                 "${env.BACKEND_IMAGE}:${env.IMAGE_TAG}",
-                "--pull --cache-from ${env.BACKEND_IMAGE}:latest --progress=plain -f backend/Dockerfile ./backend"
+                "--pull --cache-from ${env.BACKEND_IMAGE}:latest -f backend/Dockerfile ./backend"
               )
               frontendImg.tag('latest')
               backendImg.tag('latest')
