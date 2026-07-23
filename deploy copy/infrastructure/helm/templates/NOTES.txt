@@ -1,0 +1,5 @@
+Swaroop Platform Helm chart (skeleton).
+
+Install: helm install swaroop-platform . -n swaroop --create-namespace
+
+Add Kubernetes templates under templates/ to render Deployments, Services, and Ingress from values.yaml.
