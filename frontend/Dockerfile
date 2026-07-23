@@ -7,7 +7,7 @@ WORKDIR /app
 
 # Install deps first (layer-cached when only source changes)
 COPY package.json package-lock.json ./
-RUN --mount=type=cache,target=/root/.npm npm ci --prefer-offline
+RUN npm ci
 
 COPY . .
 RUN npm run build
