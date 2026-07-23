@@ -178,7 +178,7 @@ pipeline {
               VENV_DIR="${WORKSPACE}/.test-venv"
               python3 -m venv "${VENV_DIR}"
               # shellcheck disable=SC1090
-              source "${VENV_DIR}/bin/activate"
+              . "${VENV_DIR}/bin/activate"
 
               # Install slim dev deps (no torch / sentence-transformers)
               pip install --quiet --upgrade pip
