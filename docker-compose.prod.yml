@@ -80,7 +80,7 @@ services:
   certbot:
     image: certbot/certbot:latest
     volumes:
-      - ./infrastructure/nginx/ssl:/etc/letsencrypt
+      - /etc/letsencrypt:/etc/letsencrypt
       - certbot_www:/var/www/certbot
     profiles:
       - certs
