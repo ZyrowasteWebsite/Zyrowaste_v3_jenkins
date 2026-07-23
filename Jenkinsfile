@@ -57,7 +57,7 @@ pipeline {
     APP_NAME           = 'zyrowaste'
     DOMAIN             = 'zyrowaste.com'
     REGISTRY           = "${env.DOCKER_REGISTRY ?: 'ghcr.io'}"
-    IMAGE_NAMESPACE    = "${env.IMAGE_NAMESPACE ?: 'zyrowaste'}"
+    IMAGE_NAMESPACE    = "${env.IMAGE_NAMESPACE ?: 'vidisha7086'}"
     FRONTEND_IMAGE     = "${REGISTRY}/${IMAGE_NAMESPACE}/frontend"
     BACKEND_IMAGE      = "${REGISTRY}/${IMAGE_NAMESPACE}/backend"
     // Use build number unless a manual override is provided
