@@ -19,7 +19,7 @@ export function AuthNavControls() {
       <button
         type="button"
         onClick={() => clearToken()}
-        className="text-xs sm:text-sm font-semibold text-swaroop-700 hover:text-swaroop-900"
+        className="text-sm font-semibold text-green-100 hover:text-white hover:bg-green-700 px-3 py-2 rounded-md transition-colors"
       >
         Sign out
       </button>
@@ -27,13 +27,16 @@ export function AuthNavControls() {
   }
 
   return (
-    <span className="flex items-center gap-2 sm:gap-3">
-      <a href="#/signin" className="text-xs sm:text-sm font-medium hover:text-swaroop-700 transition">
+    <span className="flex items-center gap-2">
+      <a
+        href="#/signin"
+        className="text-sm font-medium text-green-100 hover:text-white hover:bg-green-700 px-3 py-2 rounded-md transition-colors"
+      >
         Sign in
       </a>
       <a
         href="#/signup"
-        className="text-xs sm:text-sm font-semibold text-white bg-swaroop-600 hover:bg-swaroop-700 px-2.5 py-1 rounded-md transition"
+        className="text-sm font-semibold text-green-800 bg-white hover:bg-green-50 px-3 py-2 rounded-md transition-colors"
       >
         Sign up
       </a>

@@ -6,6 +6,15 @@
 //   • Docker build cache pruned after push; workspace cleaned after every build
 //   • Security scan is best-effort (won't fail the build)
 //
+// Frontend SPA routes (hash-based):
+//   #/landing            — Home / marketing page
+//   #/products           — Product catalogue with modal detail popups
+//   #/contact            — WhatsApp query form + social media links
+//   #/certifications     — ISO certification cards
+//   #/subsidiaries       — Group structure
+//   #/analytics          — Financial dashboards (auth-guarded, login required)
+//   #/signin, #/signup   — Auth pages
+//
 // Jenkins credentials required:
 //   docker-registry   — Username/password for GHCR (or Docker Hub)
 //   ssh-prod          — SSH private key for root@143.244.128.22

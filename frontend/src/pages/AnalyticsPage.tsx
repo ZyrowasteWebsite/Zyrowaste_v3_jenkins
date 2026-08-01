@@ -1,3 +1,5 @@
+import { getStoredToken } from "../utils/authApi";
+
 const projections = [
   { year: 1, sales: 95.76, ebitda: 10.5, net: 4.74 },
   { year: 2, sales: 111.5, ebitda: 12.2, net: 6.65 },
@@ -48,6 +50,44 @@ function maxMetric(key: "sales" | "ebitda" | "net") {
 }
 
 export default function AnalyticsPage() {
+  const token = getStoredToken();
+
+  if (!token) {
+    return (
+      <div className="min-h-screen bg-gradient-to-b from-green-50 to-white flex items-center justify-center px-4">
+        <div className="text-center p-8 bg-white rounded-2xl border border-green-100 shadow-md max-w-md w-full">
+          <div className="w-16 h-16 mx-auto mb-5 bg-green-100 rounded-full flex items-center justify-center">
+            <svg className="w-8 h-8 text-green-700" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z" />
+            </svg>
+          </div>
+          <h2 className="text-2xl font-bold text-gray-900 mb-2">Sign in Required</h2>
+          <p className="text-gray-600 mb-6 leading-relaxed">
+            Analytics dashboards are available to registered users only. Please sign in to view
+            financial projections, ROI trends, and investment data.
+          </p>
+          <div className="flex flex-col sm:flex-row gap-3 justify-center">
+            <a
+              href="#/signin"
+              className="inline-block px-6 py-3 bg-green-700 text-white font-semibold rounded-xl hover:bg-green-800 transition-colors"
+            >
+              Sign In
+            </a>
+            <a
+              href="#/signup"
+              className="inline-block px-6 py-3 border-2 border-green-700 text-green-700 font-semibold rounded-xl hover:bg-green-50 transition-colors"
+            >
+              Create Account
+            </a>
+          </div>
+          <p className="text-xs text-gray-400 mt-5">
+            Already have an account? <a href="#/signin" className="text-green-600 hover:underline">Sign in here</a>
+          </p>
+        </div>
+      </div>
+    );
+  }
+
   const chartH = 180;
   const barW = 36;
   const gap = 14;

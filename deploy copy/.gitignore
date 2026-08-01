@@ -1,9 +1,0 @@
-.env
-.env.*
-!.env.example
-infrastructure/nginx/ssl/
-!infrastructure/nginx/ssl/.gitkeep
-*.tfstate
-*.tfstate.backup
-.terraform/
-/node_modules/
