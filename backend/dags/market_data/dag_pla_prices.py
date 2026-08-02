@@ -86,9 +86,9 @@ def validate_data(**context: object) -> None:
     for row in raw:
         price = float(row["price"])
         if price <= 0 or price > 1_000_000:
-            raise ValueError(f"Unreasonable price: {row}")
+            raise ValueError("Unreasonable price")
         if not str(row.get("commodity", "")).strip():
-            raise ValueError(f"Missing commodity: {row}")
+            raise ValueError("Missing commodity")
 
 
 def load_to_db(**context: object) -> None:

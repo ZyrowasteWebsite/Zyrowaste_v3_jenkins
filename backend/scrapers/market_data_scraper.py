@@ -6,7 +6,7 @@ import argparse
 import json
 import logging
 import sys
-from datetime import datetime, timezone
+from datetime import UTC, datetime
 from pathlib import Path
 from typing import Any
 
@@ -106,7 +106,7 @@ def save_scraped_data(payload: dict[str, Any], prefix: str = "market") -> Path:
     """Write JSON under ``data/scraped/`` with a UTC timestamp in the filename."""
     out_dir = _scraped_dir()
     out_dir.mkdir(parents=True, exist_ok=True)
-    ts = datetime.now(timezone.utc).strftime("%Y%m%dT%H%M%SZ")
+    ts = datetime.now().strftime("%Y%m%dT%H%M%SZ")
     path = out_dir / f"{prefix}_{ts}.json"
     path.write_text(json.dumps(payload, indent=2, ensure_ascii=False), encoding="utf-8")
     logger.info("Wrote scraped data to %s", path)
@@ -118,7 +118,8 @@ def main(argv: list[str] | None = None) -> int:
         level=logging.INFO,
         format="%(asctime)s %(levelname)s %(name)s: %(message)s",
     )
-    parser = argparse.ArgumentParser(description="Market data scraper (PLA + news RSS).")
+    parser = argparse.ArgumentParser(
+        description="Market data scraper (PLA + news RSS).")
     parser.add_argument(
         "--skip-indiamart",
         action="store_true",
@@ -132,7 +133,7 @@ def main(argv: list[str] | None = None) -> int:
     args = parser.parse_args(argv)
 
     combined: dict[str, Any] = {
-        "scraped_at_utc": datetime.now(timezone.utc).isoformat(),
+        "scraped_at_utc": datetime.now(UTC).isoformat(),
         "indiamart": None,
         "news_rss": None,
     }

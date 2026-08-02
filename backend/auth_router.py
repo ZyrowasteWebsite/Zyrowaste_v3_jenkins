@@ -2,7 +2,7 @@
 
 from __future__ import annotations
 
-from datetime import datetime, timedelta, timezone
+from datetime import UTC, datetime, timedelta
 from typing import Annotated
 
 from auth_deps import get_current_user
@@ -79,7 +79,7 @@ def forgot_password(body: ForgotPasswordRequest, db: Session = Depends(get_db)) 
 
     token = new_reset_token()
     user.reset_token_hash = hash_reset_token(token)
-    user.reset_token_expires = datetime.now(timezone.utc) + timedelta(
+    user.reset_token_expires = datetime.now(UTC) + timedelta(
         minutes=settings.password_reset_expire_minutes
     )
     db.add(user)
@@ -99,7 +99,7 @@ def reset_password(body: ResetPasswordRequest, db: Session = Depends(get_db)) ->
     """Set a new password using a valid reset token."""
     th = hash_reset_token(body.token.strip())
     user = db.execute(select(User).where(User.reset_token_hash == th)).scalar_one_or_none()
-    now = datetime.now(timezone.utc)
+    now = datetime.now(UTC)
     if user is None or user.reset_token_expires is None or user.reset_token_expires < now:
         raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="Invalid or expired reset link")
     user.password_hash = hash_password(body.new_password)
