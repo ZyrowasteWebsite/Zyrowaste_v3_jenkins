@@ -1,9 +1,8 @@
 """LLM-based translation (Groq) for Indian languages."""
 
+from config import get_settings
 from langchain_core.messages import HumanMessage, SystemMessage
 from langchain_groq import ChatGroq
-
-from config import get_settings
 
 SUPPORTED = frozenset({"hi", "mr", "te", "ta"})
 

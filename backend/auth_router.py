@@ -5,10 +5,6 @@ from __future__ import annotations
 from datetime import datetime, timedelta, timezone
 from typing import Annotated
 
-from fastapi import APIRouter, Depends, HTTPException, status
-from sqlalchemy import select
-from sqlalchemy.orm import Session
-
 from auth_deps import get_current_user
 from auth_schemas import (
     ForgotPasswordRequest,
@@ -30,6 +26,9 @@ from auth_utils import (
 from config import get_settings
 from db.models import User
 from db.session import get_db
+from fastapi import APIRouter, Depends, HTTPException, status
+from sqlalchemy import select
+from sqlalchemy.orm import Session
 
 router = APIRouter()
 

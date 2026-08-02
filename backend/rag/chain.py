@@ -5,7 +5,6 @@ from __future__ import annotations
 import json
 
 import httpx
-
 from config import get_settings
 
 SYSTEM_PROMPT = """You are the AI assistant for Swaroop Formulation Industries Pvt. Ltd., a biodegradable plastic bag manufacturing company based in Unnao, Uttar Pradesh, India.

@@ -94,8 +94,8 @@ def scrape_cpcb_circulars() -> dict[str, Any]:
             ) or any(key in text.lower() for key in ("plastic", "waste", "pwm", "notification")):
                 full = urljoin(CPCB_BASE, href)
                 out["circulars"].append({"title": text[:500], "url": full})
-    except Exception as exc:  # noqa: BLE001
-        logger.exception("CPCB parse error: %s", exc)
+    except Exception as exc:
+        logger.exception("CPCB parse error")
         out["error"] = str(exc)
 
     return out

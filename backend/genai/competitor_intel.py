@@ -2,10 +2,9 @@
 
 import json
 
+from config import get_settings
 from langchain_core.messages import HumanMessage, SystemMessage
 from langchain_groq import ChatGroq
-
-from config import get_settings
 
 SYSTEM = """You are a competitive intelligence analyst covering biodegradable plastics and flexible packaging
 in India and globally.

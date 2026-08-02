@@ -1,9 +1,8 @@
 """GenAI email drafting for stakeholder-specific tone (Groq)."""
 
+from config import get_settings
 from langchain_core.messages import HumanMessage, SystemMessage
 from langchain_groq import ChatGroq
-
-from config import get_settings
 
 RECIPIENT_GUIDE: dict[str, str] = {
     "investor": (

@@ -1,9 +1,8 @@
 """Pydantic schema serialization and validation tests."""
 
 import pytest
-from pydantic import ValidationError
-
 from models import ChatRequest, ChatResponse, SourceDoc
+from pydantic import ValidationError
 
 
 def test_source_doc_roundtrip() -> None:

@@ -8,14 +8,14 @@ import re
 from typing import Annotated, Any, Literal, TypedDict
 
 import httpx
+from config import get_settings
 from langchain_core.messages import AIMessage, HumanMessage, SystemMessage
 from langchain_groq import ChatGroq
 from langgraph.graph import END, StateGraph
 
-from config import get_settings
-from rag.vectorstore import get_vectorstore, similarity_search
 from rag.chain import _last_user_query, get_rag_response
 from rag.sql_chain import sql_rag_response
+from rag.vectorstore import get_vectorstore, similarity_search
 
 
 class _State(TypedDict, total=False):
@@ -81,7 +81,7 @@ async def _classify_node(state: _State) -> dict[str, Any]:
 async def _vector_node(state: _State) -> dict[str, Any]:
     get_vectorstore()
     if not callable(similarity_search):
-        raise RuntimeError("rag.vectorstore.similarity_search is not callable")
+        raise TypeError("rag.vectorstore.similarity_search is not callable")
     out = await get_rag_response(state.get("messages", []))
     return {"reply": out["reply"], "sources": list(out.get("sources", []))}
 

@@ -18,8 +18,8 @@ _BACKEND_ROOT = Path(__file__).resolve().parents[1]
 if str(_BACKEND_ROOT) not in sys.path:
     sys.path.insert(0, str(_BACKEND_ROOT))
 
-from db.models import CompetitorData, MarketPrice, RegulatoryUpdate  # noqa: E402
-from db.session import SessionLocal  # noqa: E402
+from db.models import CompetitorData, MarketPrice, RegulatoryUpdate
+from db.session import SessionLocal
 
 logger = logging.getLogger(__name__)
 

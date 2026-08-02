@@ -66,8 +66,8 @@ def scrape_indiamart_pla() -> dict[str, Any]:
             text = el.get_text(" ", strip=True)
             if text and len(text) > 20:
                 out["items"].append({"text": text[:500]})
-    except Exception as exc:  # noqa: BLE001
-        logger.exception("IndiaMART parse error: %s", exc)
+    except Exception as exc:
+        logger.exception("IndiaMART parse error")
         out["error"] = str(exc)
 
     return out
@@ -95,8 +95,8 @@ def scrape_news_rss() -> dict[str, Any]:
                     "summary": getattr(entry, "summary", "")[:800],
                 }
             )
-    except Exception as exc:  # noqa: BLE001
-        logger.exception("RSS parse failed: %s", exc)
+    except Exception as exc:
+        logger.exception("RSS parse failed")
         out["error"] = str(exc)
 
     return out

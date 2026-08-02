@@ -1,9 +1,8 @@
 """LinkedIn-style sustainability posts via Groq (length-capped)."""
 
+from config import get_settings
 from langchain_core.messages import HumanMessage, SystemMessage
 from langchain_groq import ChatGroq
-
-from config import get_settings
 
 LINKEDIN_MAX = 1300
 

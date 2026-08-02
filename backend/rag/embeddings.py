@@ -2,9 +2,8 @@
 
 from functools import lru_cache
 
-from langchain_community.embeddings import FastEmbedEmbeddings
-
 from config import get_settings
+from langchain_community.embeddings import FastEmbedEmbeddings
 
 
 @lru_cache

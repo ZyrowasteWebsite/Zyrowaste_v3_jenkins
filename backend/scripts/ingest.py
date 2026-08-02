@@ -5,17 +5,16 @@ Run from the `backend` directory:
     python -m scripts.ingest
 """
 from __future__ import annotations
-from langchain_community.document_loaders import PyPDFLoader
-from langchain_community.vectorstores import Chroma
-from langchain_text_splitters import RecursiveCharacterTextSplitter
-
-
-from config import get_settings
-from rag.embeddings import get_embeddings
-from rag.vectorstore import CHROMA_COLLECTION_NAME
 
 import sys
 from pathlib import Path
+
+from config import get_settings
+from langchain_community.document_loaders import PyPDFLoader
+from langchain_community.vectorstores import Chroma
+from langchain_text_splitters import RecursiveCharacterTextSplitter
+from rag.embeddings import get_embeddings
+from rag.vectorstore import CHROMA_COLLECTION_NAME
 
 BACKEND_ROOT = Path(__file__).resolve().parent.parent
 if str(BACKEND_ROOT) not in sys.path:

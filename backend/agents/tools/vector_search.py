@@ -37,8 +37,8 @@ def search_documents(query: str, k: int = 4) -> str:
     k = max(1, min(int(k), 20))
     try:
         docs = _vectorstore_similarity_search(query.strip(), k=k)
-    except Exception as exc:  # noqa: BLE001
-        logger.exception("Vector search failed: %s", exc)
+    except Exception as exc:
+        logger.exception("Vector search failed")
         return f"Knowledge base search failed: {exc}"
 
     if not docs:
@@ -55,8 +55,8 @@ def search_documents_with_sources(query: str, k: int = 4) -> tuple[str, list[dic
     k = max(1, min(int(k), 20))
     try:
         docs = _vectorstore_similarity_search(query.strip(), k=k)
-    except Exception as exc:  # noqa: BLE001
-        logger.exception("Vector search failed: %s", exc)
+    except Exception as exc:
+        logger.exception("Vector search failed")
         return (f"Knowledge base search failed: {exc}", [])
 
     if not docs:

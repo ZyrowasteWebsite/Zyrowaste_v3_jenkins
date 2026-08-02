@@ -16,9 +16,9 @@ _BACKEND_ROOT = Path(__file__).resolve().parents[1]
 if str(_BACKEND_ROOT) not in sys.path:
     sys.path.insert(0, str(_BACKEND_ROOT))
 
-from db.models import MarketPrice  # noqa: E402
-from db.session import SessionLocal, engine  # noqa: E402
-from sqlalchemy import text  # noqa: E402
+from db.models import MarketPrice
+from db.session import SessionLocal, engine
+from sqlalchemy import text
 
 logger = logging.getLogger(__name__)
 

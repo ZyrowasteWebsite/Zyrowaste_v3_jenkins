@@ -2,12 +2,11 @@
 
 from contextlib import asynccontextmanager
 
-from fastapi import FastAPI
-from fastapi.middleware.cors import CORSMiddleware
-
 from auth_router import router as auth_router
 from config import get_settings
 from db.session import init_db
+from fastapi import FastAPI
+from fastapi.middleware.cors import CORSMiddleware
 from models import ChatRequest, ChatResponse, HealthResponse, SourceDoc
 from rag.chain import get_rag_response
 

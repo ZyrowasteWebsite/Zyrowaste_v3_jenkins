@@ -5,10 +5,9 @@ from __future__ import annotations
 import re
 from typing import Any
 
+from config import get_settings
 from langchain_core.messages import HumanMessage, SystemMessage
 from langchain_groq import ChatGroq
-
-from config import get_settings
 
 FINANCIAL_DATA: dict[str, Any] = {
     "projections": [

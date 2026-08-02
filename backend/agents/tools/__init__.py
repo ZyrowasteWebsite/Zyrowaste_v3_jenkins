@@ -6,8 +6,8 @@ from agents.tools.vector_search import search_documents as vector_search
 from agents.tools.web_search import web_search
 
 __all__ = [
-    "vector_search",
-    "financial_calc",
     "cert_lookup",
+    "financial_calc",
+    "vector_search",
     "web_search",
 ]

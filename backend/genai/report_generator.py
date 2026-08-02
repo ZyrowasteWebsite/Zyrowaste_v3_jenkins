@@ -1,9 +1,8 @@
 """GenAI investor report drafting via Groq (ChatGroq)."""
 
+from config import get_settings
 from langchain_core.messages import HumanMessage, SystemMessage
 from langchain_groq import ChatGroq
-
-from config import get_settings
 
 REPORT_SYSTEM = """You are a senior communications advisor for Swaroop Formulation Industries Pvt. Ltd.,
 a PLA-based biodegradable packaging manufacturer in Unnao, Uttar Pradesh, India.

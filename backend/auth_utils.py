@@ -6,10 +6,9 @@ import hashlib
 import secrets
 from datetime import datetime, timedelta, timezone
 
+from config import get_settings
 from jose import JWTError, jwt
 from passlib.context import CryptContext
-
-from config import get_settings
 
 pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
 
