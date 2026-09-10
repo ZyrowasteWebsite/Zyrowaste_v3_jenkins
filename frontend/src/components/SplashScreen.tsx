@@ -1,62 +1,53 @@
-import { useState } from "react";
-import { BRAND_NAME, BRAND_TAGLINE, BRAND_WEB } from "../constants/brand";
-import fallbackLogo from "../assets/Zyrowaste_Updated.jpg";
+import { useCallback, useEffect, useRef } from "react";
 
-/** Set to true to let the mark span most of the viewport (flat artwork works best). */
-export const SPLASH_LOGO_FILL_SCREEN = false;
+const SPLASH_VIDEO_SRC = "/splash.mp4";
+const FALLBACK_MAX_MS = 30000;
 
 type SplashScreenProps = {
-  /** Logo height as a fraction of viewport height (default ~1/3). Ignored when `SPLASH_LOGO_FILL_SCREEN` is true. */
-  logoVhFraction?: number;
+  onComplete: () => void;
 };
 
 /**
- * Short intro: Zyrowaste branding, then the main app (same stack) loads.
- * Drop `public/zyrowaste-logo.png` for your circular mark; otherwise the bundled JPEG is used.
+ * Full-screen intro video on app load at normal speed; dismisses when playback ends.
  */
-export function SplashScreen({ logoVhFraction = 1 / 3 }: SplashScreenProps) {
-  const vhPercent = Math.round(logoVhFraction * 100);
-  const [useFallback, setUseFallback] = useState(false);
-  const src = useFallback ? fallbackLogo : "/zyrowaste-logo.png";
+export function SplashScreen({ onComplete }: SplashScreenProps) {
+  const videoRef = useRef<HTMLVideoElement>(null);
+  const completedRef = useRef(false);
+
+  const finish = useCallback(() => {
+    if (completedRef.current) return;
+    completedRef.current = true;
+    onComplete();
+  }, [onComplete]);
+
+  useEffect(() => {
+    const fallbackId = window.setTimeout(finish, FALLBACK_MAX_MS);
+    const video = videoRef.current;
+
+    if (video) {
+      video.playbackRate = 1;
+      video.play().catch(finish);
+    }
+
+    return () => window.clearTimeout(fallbackId);
+  }, [finish]);
 
   return (
     <div
-      className="fixed inset-0 z-[100] flex flex-col items-center justify-center bg-gradient-to-br from-white via-swaroop-50 to-emerald-50 px-6"
+      className="fixed inset-0 z-[100] flex items-center justify-center bg-black"
       role="presentation"
       aria-hidden="true"
     >
-      <div className="splash-animate flex flex-col items-center gap-5 text-center max-w-lg">
-        <div
-          className={
-            SPLASH_LOGO_FILL_SCREEN
-              ? "flex items-center justify-center w-[min(92vw,720px)] max-h-[min(70vh,520px)]"
-              : "flex items-center justify-center"
-          }
-          style={
-            SPLASH_LOGO_FILL_SCREEN
-              ? undefined
-              : { height: `${vhPercent}vh`, maxHeight: "min(40vh, 360px)" }
-          }
-        >
-          <div className="h-full aspect-square max-h-full rounded-full overflow-hidden ring-4 ring-swaroop-200 shadow-xl bg-swaroop-900">
-            <img
-              src={src}
-              alt=""
-              className="h-full w-full object-cover"
-              onError={() => setUseFallback(true)}
-              draggable={false}
-            />
-          </div>
-        </div>
-        <div className="space-y-1">
-          <p className="text-2xl font-extrabold tracking-tight text-swaroop-800">{BRAND_NAME}</p>
-          <p className="text-xs font-semibold uppercase tracking-wide text-swaroop-600">{BRAND_TAGLINE}</p>
-          <p className="text-sm text-gray-600">
-            Biodegradable packaging ·{" "}
-            <span className="font-medium text-swaroop-700">{BRAND_WEB}</span>
-          </p>
-        </div>
-      </div>
+      <video
+        ref={videoRef}
+        src={SPLASH_VIDEO_SRC}
+        className="h-full w-full object-cover"
+        autoPlay
+        muted
+        playsInline
+        onEnded={finish}
+        onError={finish}
+      />
     </div>
   );
 }

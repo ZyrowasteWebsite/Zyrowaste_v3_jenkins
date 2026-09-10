@@ -1,8 +1,6 @@
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import { SplashScreen } from "./components/SplashScreen";
 import { normalizeHashRoute, RoutesLayout } from "./components/RoutesLayout";
-
-const SPLASH_MS = 500;
 
 export default function App() {
   const [route, setRoute] = useState<string>(normalizeHashRoute);
@@ -15,14 +13,11 @@ export default function App() {
     return () => window.removeEventListener("hashchange", sync);
   }, []);
 
-  useEffect(() => {
-    const id = window.setTimeout(() => setShowSplash(false), SPLASH_MS);
-    return () => window.clearTimeout(id);
-  }, []);
+  const dismissSplash = useCallback(() => setShowSplash(false), []);
 
   return (
     <>
-      {showSplash ? <SplashScreen /> : null}
+      {showSplash ? <SplashScreen onComplete={dismissSplash} /> : null}
       <RoutesLayout route={route} />
     </>
   );

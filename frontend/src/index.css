@@ -4,7 +4,13 @@
 
 @layer base {
   body {
-    @apply bg-white text-gray-900 antialiased;
+    @apply bg-white text-gray-900 antialiased font-sans;
+  }
+
+  h1,
+  h2,
+  h3 {
+    @apply tracking-tight;
   }
 }
 
