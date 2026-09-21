@@ -3,7 +3,6 @@ import { AuthNavControls } from "./AuthNavControls";
 import { BrandMark } from "./BrandMark";
 import ChatBot from "./ChatBot";
 
-import EntryPage from "../pages/EntryPage";
 import LandingPage from "../pages/LandingPage";
 import AnalyticsPage from "../pages/AnalyticsPage";
 import CertificationsPage from "../pages/CertificationsPage";
@@ -27,7 +26,7 @@ export function normalizeHashRoute(): string {
 
 /* ---------------- NAV LINKS ---------------- */
 const NAV_LINKS = [
-  { label: "Home", href: "#/landing" },
+  { label: "Home", href: "#/" },
   { label: "Products", href: "#/products" },
   { label: "Certifications", href: "#/certifications" },
   { label: "Subsidiaries", href: "#/subsidiaries" },
@@ -44,7 +43,7 @@ export function AppNav() {
       <div className="max-w-7xl mx-auto px-4 py-0">
         <div className="flex items-center justify-between h-16">
           {/* Logo */}
-          <a href="#/landing" className="flex-shrink-0 flex items-center gap-2">
+          <a href="#/" className="flex-shrink-0 flex items-center gap-2">
             <BrandMark size="sm" />
           </a>
 
@@ -109,9 +108,7 @@ type RoutesLayoutProps = { route: string };
 
 export function RoutesLayout({ route }: RoutesLayoutProps) {
   const page =
-    route === "/" ? (
-      <EntryPage />
-    ) : route === "/landing" ? (
+    route === "/" || route === "/landing" ? (
       <LandingPage />
     ) : route === "/certifications" ? (
       <CertificationsPage />
@@ -132,12 +129,12 @@ export function RoutesLayout({ route }: RoutesLayoutProps) {
     ) : route === "/reset-password" ? (
       <ResetPasswordPage />
     ) : (
-      <EntryPage />
+      <LandingPage />
     );
 
   return (
     <>
-      {route !== "/" && <AppNav />}
+      <AppNav />
       {page}
       <ChatBot />
     </>
